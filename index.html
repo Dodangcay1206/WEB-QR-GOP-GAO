@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Code của tôi</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #1f2937;
+    }
+
+    header {
+      padding: 40px 20px 30px;
+      text-align: center;
+      background: #ffffff;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      color: #2563eb;
+    }
+
+    header p {
+      color: #64748b;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 18px;
+    }
+
+    #search {
+      width: 100%;
+      padding: 13px 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+      margin-bottom: 22px;
+    }
+
+    .qr-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .qr-card {
+      background: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px #0000000b;
+    }
+
+    .qr-card img {
+      width: 100%;
+      max-width: 250px;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      cursor: zoom-in;
+      border-radius: 8px;
+    }
+
+    .qr-card h2 {
+      font-size: 18px;
+      margin: 15px 0 8px;
+    }
+
+    .qr-card p {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .qr-card button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .qr-card button:hover {
+      background: #1d4ed8;
+    }
+
+    .empty {
+      text-align: center;
+      color: #64748b;
+      grid-column: 1 / -1;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000000dd;
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal img {
+      max-width: 90vw;
+      max-height: 80vh;
+      background: white;
+      object-fit: contain;
+    }
+
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 22px;
+      color: white;
+      font-size: 36px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>My QR Codes</h1>
+    <p>Tất cả mã QR của tôi ở một nơi</p>
+  </header>
+
+  <main class="container">
+    <input
+      id="search"
+      type="search"
+      placeholder="Tìm kiếm mã QR..."
+      aria-label="Tìm kiếm mã QR"
+    >
+
+    <div class="qr-grid" id="qrGrid">
+
+      <!-- QR 1: Thay ảnh và tên theo nhu cầu -->
+      <article class="qr-card">
+        <img
+          src="images/qr-1.png"
+          alt="Mã QR số 1"
+          loading="lazy"
+        >
+        <h2>QR ngân hàng</h2>
+        <p>Quét mã để thanh toán</p>
+        <button type="button" class="zoom">
+          Phóng to QR
+        </button>
+      </article>
+
+      <!-- QR 2 -->
+      <article class="qr-card">
+        <img
+          src="images/qr-2.png"
+          alt="Mã QR số 2"
+          loading="lazy"
+        >
+        <h2>QR cá nhân</h2>
+        <p>Mã QR thứ hai</p>
+        <button type="button" class="zoom">
+          Phóng to QR
+        </button>
+      </article>
+
+      <!-- QR 3 -->
+      <article class="qr-card">
+        <img
+          src="images/qr-3.png"
+          alt="Mã QR số 3"
+          loading="lazy"
+        >
+        <h2>QR khác</h2>
+        <p>Mã QR thứ ba</p>
+        <button type="button" class="zoom">
+          Phóng to QR
+        </button>
+      </article>
+
+    </div>
+  </main>
+
+  <div class="modal" id="modal" role="dialog"
+       aria-modal="true" aria-label="Ảnh QR phóng to">
+    <span class="close" id="close">&times;</span>
+    <img id="largeQR" alt="Mã QR phóng to">
+  </div>
+
+  <footer>
+    © 2026 My QR Codes
+  </footer>
+
+  <script>
+    const search = document.getElementById("search");
+    const cards = document.querySelectorAll(".qr-card");
+    const modal = document.getElementById("modal");
+    const largeQR = document.getElementById("largeQR");
+    const close = document.getElementById("close");
+
+    search.addEventListener("input", () => {
+      const keyword = search.value.toLowerCase().trim();
+
+      cards.forEach(card => {
+        card.style.display =
+          card.innerText.toLowerCase().includes(keyword)
+            ? ""
+            : "none";
+      });
+    });
+
+    document.querySelectorAll(".qr-card img").forEach(img => {
+      img.addEventListener("error", () => {
+        img.alt = "Không tìm thấy ảnh QR: " + img.src;
+      });
+    });
+
+    function openQR(img) {
+      largeQR.src = img.src;
+      modal.style.display = "flex";
+    }
+
+    document.querySelectorAll(".qr-card img").forEach(img => {
+      img.addEventListener("click", () => openQR(img));
+    });
+
+    document.querySelectorAll(".zoom").forEach(button => {
+      button.addEventListener("click", () => {
+        openQR(button.closest(".qr-card").querySelector("img"));
+      });
+    });
+
+    function closeQR() {
+      modal.style.display = "none";
+      largeQR.src = "";
+    }
+
+    close.addEventListener("click", closeQR);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeQR();
+    });
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeQR();
+    });
+  </script>
+</body>
+</html>
